@@ -1,10 +1,12 @@
 #define OLC_PGE_APPLICATION
-#include "olcPixelGameEngine.h"
+#include "include/olcPixelGameEngine.h"
 
 #include <cmath>
 #include <cstdlib>
 #include <vector>
 #include <array>
+
+#include "include/utils.h"
 
 using namespace std;
 
@@ -20,8 +22,9 @@ public:
 	int mold_number = 60;
 	int molds[60][3];
 	int mold_targets[60][2];
-	int speed = 10;
-	int max_count = 10;
+	vector <array<int, 3>> trails[60];
+	int speed = 25;
+	int max_count = 25;
 	int count = max_count;
 public:
 	bool OnUserCreate() override
@@ -42,11 +45,16 @@ public:
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
-		//Clear({0, 0, 0});
+		Clear({0, 0, 0});
 		
 		for (int i = 0; i < mold_number - 1; i++)
 		{
 			FillRect(molds[i][0], molds[i][1], pixel_width, pixel_width, {225, 225, 225});
+
+			for (int j = 0; j < trails[i].size(); j++)
+			{
+				FillRect(trails[i][j][0], trails[i][j][1], pixel_width, pixel_width, {trails[i][j][2], trails[i][j][2], trails[i][j][2]});
+			}
 		}
 
 		if (count == 0){
@@ -68,10 +76,12 @@ public:
 					int dx = mold_targets[i][0] - molds[i][0];
 					int dy = mold_targets[i][1] - molds[i][1];
 
+					int factor = hcf(dx, dy);
+
 					if (dx != 0)
 					{
 						if (dx < 0)
-							molds[i][0] -= 1;	
+							molds[i][0] -= 1;
 						else if (dx > 0)
 							molds[i][0] += 1;
 					}
@@ -111,6 +121,22 @@ public:
 						molds[i][2] = rand() % 90 + 270;
 				}
 
+				if (trails[i].size() < 100)
+				{
+					trails[i].insert(trails[i].begin(), {molds[i][0], molds[i][1], 250});
+				}
+
+				else if (trails[i].size() >= 100)
+				{
+					trails[i].pop_back();
+					trails[i].insert(trails[i].begin(), {molds[i][0], molds[i][1], 250});
+				}
+
+				for (int j = 0; j < trails[i].size(); j++)
+				{
+					trails[i][j][2] -= 2;
+				}
+
 			}
 
 			count = max_count;
@@ -126,7 +152,7 @@ public:
 int main()
 {
 	Physarum simulation;
-	if (simulation.Construct(640, 380, 2, 2))
+	if (simulation.Construct(320, 180, 2, 2))
 		simulation.Start();
 	return 0;
 }
