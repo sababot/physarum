@@ -24,8 +24,8 @@ public:
 	int molds[500][3];
 	int mold_targets[500][2];
 	vector <array<int, 3>> trails[500];
-	int speed = 100;
-	int max_count = 500;
+	int speed = 250;
+	int max_count = 0;
 	int count = max_count;
 public:
 	bool OnUserCreate() override
@@ -62,35 +62,35 @@ public:
 			for (int i = 0; i < mold_number - 1; i++)
 			{
 				// MOVE //
-				//if (molds[i][0] == mold_targets[i][0] && molds[i][1] == mold_targets[i][1])
-				//{
+				if (molds[i][0] == mold_targets[i][0] && molds[i][1] == mold_targets[i][1])
+				{
 					int rotation = molds[i][2];
 					int dx = sin(rotation * (M_PI / 180)) * speed;
 					int dy = cos(rotation * (M_PI / 180)) * speed;
 
-					/*if (dx > dy && dx != 0)
+					if (dx < dy && dx != 0)
 					{
-						dy = dy / dx;
-						dx = dx / dx;
+						dy = abs(dy / dx);
+
+						dx = 1;
 					}
 
-					else if (dy > dx && dy != 0)
+					else if (dy < dx && dy != 0)
 					{
-						dx = dx / dy;
-						dy = dy / dy;
+						dx = abs(dx / dy);
+
+						dy = 1;
 					}
 
-					else if (dx == dy)
-					{
-						dx = dx / dx;
-						dy = dy / dy;
-					}
-*/
-					//mold_targets[i][0] = molds[i][0] + dx;
-					//mold_targets[i][1] = molds[i][1] + dy;
-					molds[i][0] += dx;
-					molds[i][1] += dy;
-				/*}
+					if ((sin(rotation * (M_PI / 180)) < 0 && dx > 0) || (sin(rotation * (M_PI / 180)) > 0 && dx < 0))
+						dx *= -1;
+
+					if ((cos(rotation * (M_PI / 180)) < 0 && dy > 0) || (cos(rotation * (M_PI / 180)) > 0 && dy < 0))
+						dy *= -1;
+
+					mold_targets[i][0] = molds[i][0] + dx;
+					mold_targets[i][1] = molds[i][1] + dy;
+				}
 
 				else
 				{
@@ -105,7 +105,7 @@ public:
 							molds[i][0] += 1;
 					}
 
-					if (dy != 0)
+					else if (dy != 0)
 					{
 						if (dy < 0)
 							molds[i][1] -= 1;
@@ -113,25 +113,37 @@ public:
 							molds[i][1] += 1;
 					}
 				}
-*/
+
 				// BOUNDARIES //
 				if (molds[i][0] <= 1)
 				{
+					molds[i][0] = mold_targets[i][0];
+					molds[i][1] = mold_targets[i][1];
+
 					molds[i][2] = rand() % 180;
 				}
 
 				else if (molds[i][0] >= ScreenWidth())
 				{
-					molds[i][2] = rand() % 180 + 180; 
+					molds[i][0] = mold_targets[i][0];
+					molds[i][1] = mold_targets[i][1];
+
+					molds[i][2] = rand() % 180 + 180;
 				}
 				
 				else if (molds[i][1] >= ScreenHeight())
 				{
+					molds[i][0] = mold_targets[i][0];
+					molds[i][1] = mold_targets[i][1];
+
 					molds[i][2] = rand() % 180 + 90;
 				}
 
 				else if (molds[i][1] <= 1)
 				{
+					molds[i][0] = mold_targets[i][0];
+					molds[i][1] = mold_targets[i][1];
+
 					int choose = rand() % 2 + 1;
 					
 					if (choose == 1)
@@ -141,12 +153,12 @@ public:
 				}
 
 				// TRAILS //
-				if (trails[i].size() < 110)
+				if (trails[i].size() < 500)
 				{
 					trails[i].insert(trails[i].begin(), {molds[i][0], molds[i][1], 250});
 				}
 
-				else if (trails[i].size() >= 110)
+				else if (trails[i].size() >= 500)
 				{
 					trails[i].pop_back();
 					trails[i].insert(trails[i].begin(), {molds[i][0], molds[i][1], 250});
@@ -154,7 +166,10 @@ public:
 
 				for (int j = 0; j < trails[i].size(); j++)
 				{
-					trails[i][j][2] -= 2;
+					trails[i][j][2] -= 0.01;
+
+					if (trails[i][j][2] < 10)
+						trails[i].erase(trails[i].begin() + j);
 				}
 
 			}
