@@ -20,13 +20,14 @@ public:
 	}
 public:
 	int pixel_width = 1;
-	int mold_number = 500;
-	int molds[500][5];
-	int mold_targets[500][2];
-	vector <array<int, 3>> trails[500];
-	int speed = 12;
+	int mold_number = 750;
+	int molds[750][5];
+	int mold_targets[750][2];
+	vector <array<int, 3>> trails[750];
+	int speed = 10;
 	int max_count = 0;
 	int count = max_count;
+	bool isPause = false;
 public:
 	bool OnUserCreate() override
 	{
@@ -46,18 +47,21 @@ public:
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
-		Clear({0, 0, 0});
-		/*
-		for (int i = 0; i < mold_number - 1; i++)
-		{
-			for (int j = 0; j < trails[i].size(); j++)
-			{
-				FillRect(trails[i][j][0], trails[i][j][1], pixel_width, pixel_width, {trails[i][j][2], trails[i][j][2], trails[i][j][2]});
-			}
 
-			FillRect(molds[i][0], molds[i][1], pixel_width, pixel_width, {225, 225, 225});
-		}
-		*/
+		if (isPause == false)
+		{
+			Clear({255, 255, 255});
+			/*
+			for (int i = 0; i < mold_number - 1; i++)
+			{
+				for (int j = 0; j < trails[i].size(); j++)
+				{
+					FillRect(trails[i][j][0], trails[i][j][1], pixel_width, pixel_width, {trails[i][j][2], trails[i][j][2], trails[i][j][2]});
+				}
+
+				FillRect(molds[i][0], molds[i][1], pixel_width, pixel_width, {225, 225, 225});
+			}
+			*/
 
 			for (int i = 0; i < mold_number - 1; i++)
 			{
@@ -75,91 +79,63 @@ public:
 
 						molds[i][3] = dx;
 						molds[i][4] = dy;
+
+						molds[i][2] += rand() % 30 - 15;
 					}
 
 					else
 					{
 						int dx = molds[i][3];
 						int dy = molds[i][4];
+						/*
+						int mod_dx = dx;
+						int mod_dy = dy;
+						int rotation = molds[i][2];
 
-						int factor = max(dx, dy);
+						if (abs(dx) < abs(dy))
+							mod_dy = 1;
+						else if (abs(dx) > abs(dy))
+							mod_dx = 1;
+
+						if ((sin(rotation * (M_PI / 180)) > 0 && mod_dx < 0) || (sin(rotation * (M_PI / 180)) < 0 && mod_dx > 0))
+							mod_dx *= -1;
+
+						if ((cos(rotation * (M_PI / 180)) > 0 && mod_dy < 0) || (cos(rotation * (M_PI / 180)) < 0 && mod_dy > 0))
+							mod_dy *= -1;
+						*/
 
 						molds[i][0] += dx;
 						molds[i][1] += dy;
 
-						if (trails[i].size() >= 1200)
-						{
-							if (dx > 0)
+							if (trails[i].size() >= 630)
 							{
-								for (int j = 0; j < dx; j++)
+								for (int j = 0; j < abs(dx); j++)
 								{
 									trails[i].pop_back();
-									trails[i].insert(trails[i].begin(), {molds[i][0] + j, molds[i][1], 250 - j});
+									trails[i].insert(trails[i].begin(), {molds[i][0] + ((dx / abs(dx)) * j), molds[i][1], j});
 								}
-							}
 
-							else if (dx < 0)
-							{
-								for (int j = 0; j < (dx * -1); j++)
+								for (int j = 0; j < abs(dy); j++)
 								{
 									trails[i].pop_back();
-									trails[i].insert(trails[i].begin(), {molds[i][0] - j, molds[i][1], 250 - j});
+									trails[i].insert(trails[i].begin(), {molds[i][0], molds[i][1] - ((dy / abs(dy)) * j), j});
 								}
 							}
 
-							if (dy > 0)
+							else if (trails[i].size() < 630)
 							{
-								for (int j = 0; j < dy; j++)
+								for (int j = 0; j < abs(dx); j++)
 								{
-									trails[i].pop_back();
-									trails[i].insert(trails[i].begin(), {molds[i][0], molds[i][1] - j, 250 - j});
+									trails[i].insert(trails[i].begin(), {molds[i][0] + ((dx / abs(dx)) * j), molds[i][1], j});
+								}
+
+								for (int j = 0; j < abs(dy); j++)
+								{
+									trails[i].insert(trails[i].begin(), {molds[i][0], molds[i][1] - ((dy / abs(dy)) * j), j});
 								}
 							}
 
-							else if (dy < 0)
-							{
-								for (int j = 0; j < (dy * -1); j++)
-								{
-									trails[i].pop_back();
-									trails[i].insert(trails[i].begin(), {molds[i][0], molds[i][1] + j, 250 - j});
-								}
-							}
-						}
-
-						else if (trails[i].size() < 1200)
-						{
-							if (dx > 0)
-							{
-								for (int j = 0; j < dx; j++)
-								{
-									trails[i].insert(trails[i].begin(), {molds[i][0] + j, molds[i][1], 250 - j});
-								}
-							}
-
-							else if (dx < 0)
-							{
-								for (int j = 0; j < (dx * -1); j++)
-								{
-									trails[i].insert(trails[i].begin(), {molds[i][0] - j, molds[i][1], 250 - j});
-								}
-							}
-
-							if (dy > 0)
-							{
-								for (int j = 0; j < dy; j++)
-								{
-									trails[i].insert(trails[i].begin(), {molds[i][0], molds[i][1] - j, 250 - j});
-								}
-							}
-
-							else if (dy < 0)
-							{
-								for (int j = 0; j < (dy * -1); j++)
-								{
-									trails[i].insert(trails[i].begin(), {molds[i][0], molds[i][1] + j, 250 - j});
-								}
-							}
-						}
+						//}
 						/*
 						int dx = mold_targets[i][0] - molds[i][0];
 						int dy = mold_targets[i][1] - molds[i][1];
@@ -234,7 +210,8 @@ public:
 				// DRAW
 				for (int j = 0; j < trails[i].size(); j++)
 				{
-					trails[i][j][2] -= 1;
+					if (trails[i][j][2] < 255)
+						trails[i][j][2] += 2;
 				}
 
 				for (int j = 0; j < trails[i].size(); j++)
@@ -242,9 +219,18 @@ public:
 					FillRect(trails[i][j][0], trails[i][j][1], pixel_width, pixel_width, {trails[i][j][2], trails[i][j][2], trails[i][j][2]});
 				}
 
-				FillRect(molds[i][0], molds[i][1], pixel_width, pixel_width, {225, 225, 225});
+				FillRect(molds[i][0], molds[i][1], pixel_width, pixel_width, {225, 0, 225});
 
 			}
+		}
+
+		if (GetKey(olc::Key::SPACE).bPressed)
+		{
+			if (isPause == false)
+				isPause = true;
+			else if (isPause == true)
+				isPause = false;
+		}
 
 		return true;
 	}
