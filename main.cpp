@@ -1,14 +1,15 @@
 #define OLC_PGE_APPLICATION
 #include "include/olcPixelGameEngine.h"
+
 #include "include/particle.h"
+#include "include/trailmap.h"
+#include "include/utils.h"
 
 #include <cmath>
 #include <cstdlib>
 #include <vector>
 #include <array>
 #include <algorithm>
-
-#include "include/utils.h"
 
 using namespace std;
 
@@ -21,7 +22,7 @@ public:
 	}
 public:
 	int pixel_width = 1;
-	int mold_number = 750;
+	int mold_number = 250;
 	//int molds[750][5];
 	//int mold_targets[750][2];
 	//vector <array<int, 3>> trails[750];
@@ -29,7 +30,9 @@ public:
 	//int max_count = 0;
 	//int count = max_count;
 	
-	Particle molds[750];
+	TrailMap trailmap;
+
+	Particle molds[250];
 
 	bool isPause = false;
 public:
@@ -45,8 +48,10 @@ public:
 
 			molds[i].target_x = ScreenWidth() / 2;
 			molds[i].target_y = ScreenHeight() / 2;
+
+			molds[i].trailmap = &trailmap;
 		}
-		
+
 		return true;
 	}
 
@@ -55,18 +60,7 @@ public:
 
 		if (isPause == false)
 		{
-			Clear({255, 255, 255});
-			/*
-			for (int i = 0; i < mold_number - 1; i++)
-			{
-				for (int j = 0; j < trails[i].size(); j++)
-				{
-					FillRect(trails[i][j][0], trails[i][j][1], pixel_width, pixel_width, {trails[i][j][2], trails[i][j][2], trails[i][j][2]});
-				}
-
-				FillRect(molds[i][0], molds[i][1], pixel_width, pixel_width, {225, 225, 225});
-			}
-			*/
+			Clear({0, 0, 0});
 
 			for (int i = 0; i < mold_number - 1; i++)
 			{	
@@ -90,7 +84,7 @@ public:
 int main()
 {
 	Physarum simulation;
-	if (simulation.Construct(2560, 1440, 1, 1))
+	if (simulation.Construct(1280, 720, 1, 1))
 		simulation.Start();
 	return 0;
 }

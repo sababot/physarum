@@ -1,13 +1,14 @@
 #pragma once
 
 #include "olcPixelGameEngine.h"
+#include "trailmap.h"
 
 #include <vector>
 #include <array>
 
 using namespace std;
 
-class Particle : public olc::PixelGameEngine
+class Particle
 {
 public:
 	int x;
@@ -20,8 +21,10 @@ public:
 	int target_x;
 	int target_y;
 
+	TrailMap* trailmap;
+
 	vector <array<int, 3>> trails;
 
-	void Move(olc::PixelGameEngine* pge);
-	void Draw(olc::PixelGameEngine* pge);
+	void Move(olc::PixelGameEngine*);
+	void Draw(olc::PixelGameEngine*);
 };

@@ -1,4 +1,5 @@
 #include "../include/particle.h"
+#include "../include/trailmap.h"
 #include "../include/olcPixelGameEngine.h"
 
 #include <cmath>
@@ -31,13 +32,19 @@ void Particle::Move(olc::PixelGameEngine* pge)
 			for (int i = 0; i < abs(dx); i++)
 			{
 				trails.pop_back();
-				trails.insert(trails.begin(), {x + ((dx / abs(dx)) * i), y, (i * 2)});
+				trails.insert(trails.begin(), {x + ((dx / abs(dx)) * i), y, 255 - (i * 2)});
+
+				if (x + ((dx / abs(dx)) * i) < 1280 && x + ((dx / abs(dx)) * i) > 0 && y > 0 && y < 720)
+					trailmap->trails[x + ((dx / abs(dx)) * i)][y] = 255 - (i * 2);
 			}
 
 			for (int i = 0; i < abs(dy); i++)
 			{
 				trails.pop_back();
-				trails.insert(trails.begin(), {x, y - ((dy / abs(dy)) * i), (i * 2)});
+				trails.insert(trails.begin(), {x, y - ((dy / abs(dy)) * i), 255 - (i * 2)});
+
+				if (x < 1280 && x > 0 && y - ((dy / abs(dy)) * i) > 0 && y - ((dy / abs(dy)) * i) < 720)
+					trailmap->trails[x][y - ((dy / abs(dy)) * i)] = 255 - (i * 2);
 			}
 		}
 
@@ -45,14 +52,33 @@ void Particle::Move(olc::PixelGameEngine* pge)
 		{
 			for (int i = 0; i < abs(dx); i++)
 			{
-				trails.insert(trails.begin(), {x + ((dx / abs(dx)) * i), y, (i * 2)});
+				trails.insert(trails.begin(), {x + ((dx / abs(dx)) * i), y, 255 - (i * 2)});
+
+				trailmap->trails[x + ((dx / abs(dx)) * i)][y] = 255 - (i * 2);
 			}
 
 			for (int i = 0; i < abs(dy); i++)
 			{
-				trails.insert(trails.begin(), {x, y - ((dy / abs(dy)) * i), (i * 2)});
+				trails.insert(trails.begin(), {x, y - ((dy / abs(dy)) * i), 255 - (i * 2)});
+
+				if (x < 1280 && x > 0 && y - ((dy / abs(dy)) * i) > 0 && y - ((dy / abs(dy)) * i) < 720)
+					trailmap->trails[x][y - ((dy / abs(dy)) * i)] = 255 - (i * 2);
 			}
 		}
+		/*
+		if (trails.size() < 550)
+		{
+			for (int i = 0; i < abs(dx); i++)
+			{
+				trailmap->trails[x + ((dx / abs(dx)) * i)][y] = 255 - (i * 2);
+			}
+
+			for (int i = 0; i < abs(dy); i++)
+			{
+				trailmap->trails[x][y - ((dy / abs(dy)) * i)] = 255 - (i * 2);
+			}
+		}
+		*/
 	}
 
 	// BOUNDARIES
@@ -86,14 +112,12 @@ void Particle::Draw(olc::PixelGameEngine* pge)
 {
 	for (int i = 0; i < trails.size(); i++)
 	{
-		if (trails[i][2] < 255)
-			trails[i][2] += 2;
+		if (trails[i][2] > 0)
+			trails[i][2] -= 2;
 	}
 
 	for (int i = 0; i < trails.size(); i++)
 	{
-		pge->FillRect(trails[i][0], trails[i][1], 1, 1, {trails[i][2], 255, trails[i][2]});
+		pge->FillRect(trails[i][0], trails[i][1], 1, 1, {trails[i][2], trails[i][2], trails[i][2]});
 	}
-
-	pge->FillRect(x, y, 1, 1, {255, 255, 255});
 }
