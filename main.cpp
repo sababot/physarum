@@ -21,23 +21,19 @@ public:
 		sAppName = "Physarum Mold Simulation";
 	}
 public:
+	// GLOBAL VARIABLES
 	int pixel_width = 1;
 	int mold_number = 250;
-	//int molds[750][5];
-	//int mold_targets[750][2];
-	//vector <array<int, 3>> trails[750];
 	int speed = 10;
-	//int max_count = 0;
-	//int count = max_count;
 	
 	TrailMap trailmap;
-
 	Particle molds[250];
 
 	bool isPause = false;
 public:
 	bool OnUserCreate() override
 	{
+		// SPAWN ALL PARTICLES
 		for (int i = 0; i < mold_number; i++)
 		{
 			molds[i].x = ScreenWidth() / 2;	
@@ -45,9 +41,7 @@ public:
 			molds[i].rotation = i * 3;
 
 			molds[i].speed = speed;
-
-			molds[i].target_x = ScreenWidth() / 2;
-			molds[i].target_y = ScreenHeight() / 2;
+			molds[i].state = 0;
 
 			molds[i].trailmap = &trailmap;
 		}
@@ -57,18 +51,22 @@ public:
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
-
+		// IF UNPAUSED
 		if (isPause == false)
 		{
 			Clear({0, 0, 0});
 
 			for (int i = 0; i < mold_number - 1; i++)
 			{	
+				molds[i].Sense(this);
+				molds[i].Rotate(this);
 				molds[i].Move(this);
+				molds[i].Deposit(this);
 				molds[i].Draw(this);
 			}
 		}
 
+		// PAUSE SIMULATION
 		if (GetKey(olc::Key::SPACE).bPressed)
 		{
 			if (isPause == false)
@@ -84,7 +82,7 @@ public:
 int main()
 {
 	Physarum simulation;
-	if (simulation.Construct(1280, 720, 1, 1))
+	if (simulation.Construct(1440, 1440, 1, 1))
 		simulation.Start();
 	return 0;
 }

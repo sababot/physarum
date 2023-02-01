@@ -8,80 +8,26 @@
 #include <array>
 #include <algorithm>
 
+void Particle::Sense(olc::PixelGameEngine* pge)
+{
+	// todo
+}
+
+void Particle::Rotate(olc::PixelGameEngine* pge)
+{
+	// todo
+}
+
 void Particle::Move(olc::PixelGameEngine* pge)
 {
-	// MOVE
-	if (x == target_x && y == target_y)
-	{
-		dx = sin(rotation * (M_PI / 180)) * speed;
-		dy = cos(rotation * (M_PI / 180)) * speed;
+	/***** MOVE *****/
+	dx = sin(rotation * (M_PI / 180)) * speed;
+	dy = cos(rotation * (M_PI / 180)) * speed;
 
-		target_x = x + dx;
-		target_y = y + dy;
+	x += dx;
+	y += dy;
 
-		rotation += rand() % 60 - 30;
-	}
-
-	else
-	{
-		x += dx;
-		y += dy;
-
-		if (trails.size() >= 550)
-		{
-			for (int i = 0; i < abs(dx); i++)
-			{
-				trails.pop_back();
-				trails.insert(trails.begin(), {x + ((dx / abs(dx)) * i), y, 255 - (i * 2)});
-
-				if (x + ((dx / abs(dx)) * i) < 1280 && x + ((dx / abs(dx)) * i) > 0 && y > 0 && y < 720)
-					trailmap->trails[x + ((dx / abs(dx)) * i)][y] = 255 - (i * 2);
-			}
-
-			for (int i = 0; i < abs(dy); i++)
-			{
-				trails.pop_back();
-				trails.insert(trails.begin(), {x, y - ((dy / abs(dy)) * i), 255 - (i * 2)});
-
-				if (x < 1280 && x > 0 && y - ((dy / abs(dy)) * i) > 0 && y - ((dy / abs(dy)) * i) < 720)
-					trailmap->trails[x][y - ((dy / abs(dy)) * i)] = 255 - (i * 2);
-			}
-		}
-
-		else if (trails.size() < 550)
-		{
-			for (int i = 0; i < abs(dx); i++)
-			{
-				trails.insert(trails.begin(), {x + ((dx / abs(dx)) * i), y, 255 - (i * 2)});
-
-				trailmap->trails[x + ((dx / abs(dx)) * i)][y] = 255 - (i * 2);
-			}
-
-			for (int i = 0; i < abs(dy); i++)
-			{
-				trails.insert(trails.begin(), {x, y - ((dy / abs(dy)) * i), 255 - (i * 2)});
-
-				if (x < 1280 && x > 0 && y - ((dy / abs(dy)) * i) > 0 && y - ((dy / abs(dy)) * i) < 720)
-					trailmap->trails[x][y - ((dy / abs(dy)) * i)] = 255 - (i * 2);
-			}
-		}
-		/*
-		if (trails.size() < 550)
-		{
-			for (int i = 0; i < abs(dx); i++)
-			{
-				trailmap->trails[x + ((dx / abs(dx)) * i)][y] = 255 - (i * 2);
-			}
-
-			for (int i = 0; i < abs(dy); i++)
-			{
-				trailmap->trails[x][y - ((dy / abs(dy)) * i)] = 255 - (i * 2);
-			}
-		}
-		*/
-	}
-
-	// BOUNDARIES
+	/***** BOUNDARIES *****/
 	if (x <= 1)
 	{
 		rotation = rand() % 180;
@@ -105,6 +51,50 @@ void Particle::Move(olc::PixelGameEngine* pge)
 			rotation = rand() % 90;
 		if (choose == 2)
 			rotation = rand() % 90 + 270;
+	}
+}
+
+void Particle::Deposit(olc::PixelGameEngine* pge)
+{
+	/***** IF MAX TRAILS NOT REACHED *****/
+	if (trails.size() >= 550)
+	{
+		for (int i = 0; i < abs(dx); i++)
+		{
+			trails.pop_back();
+			trails.insert(trails.begin(), {x + ((dx / abs(dx)) * i), y, 255 - (i * 2)});
+
+			if (x + ((dx / abs(dx)) * i) < 1280 && x + ((dx / abs(dx)) * i) > 0 && y > 0 && y < 720)
+				trailmap->trails[x + ((dx / abs(dx)) * i)][y] = 255 - (i * 2);
+		}
+
+		for (int i = 0; i < abs(dy); i++)
+		{
+			trails.pop_back();
+			trails.insert(trails.begin(), {x, y - ((dy / abs(dy)) * i), 255 - (i * 2)});
+
+			if (x < 1280 && x > 0 && y - ((dy / abs(dy)) * i) > 0 && y - ((dy / abs(dy)) * i) < 720)
+				trailmap->trails[x][y - ((dy / abs(dy)) * i)] = 255 - (i * 2);
+		}
+	}
+
+	/***** IF MAX TRAILS REACHED *****/
+	else if (trails.size() < 550)
+	{
+		for (int i = 0; i < abs(dx); i++)
+		{
+			trails.insert(trails.begin(), {x + ((dx / abs(dx)) * i), y, 255 - (i * 2)});
+
+			trailmap->trails[x + ((dx / abs(dx)) * i)][y] = 255 - (i * 2);
+		}
+
+		for (int i = 0; i < abs(dy); i++)
+		{
+			trails.insert(trails.begin(), {x, y - ((dy / abs(dy)) * i), 255 - (i * 2)});
+
+			if (x < 1280 && x > 0 && y - ((dy / abs(dy)) * i) > 0 && y - ((dy / abs(dy)) * i) < 720)
+				trailmap->trails[x][y - ((dy / abs(dy)) * i)] = 255 - (i * 2);
+		}
 	}
 }
 
