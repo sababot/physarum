@@ -18,6 +18,9 @@ public:
 
 	int dx; // change in x
 	int dy; // change in y
+
+	int sensor_angle;
+	int sensor_distance;
 	int state; // 1 - no change; 2 - random; 3 - right; 4 - left
 
 	TrailMap* trailmap; // trailmap to store pheremones
