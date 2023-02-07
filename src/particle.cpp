@@ -14,17 +14,25 @@ void Particle::Sense(olc::PixelGameEngine* pge)
 	bool left = false;
 
 	// SENSE
-	if ((x < pge->ScreenWidth() - sensor_distance) && (x > sensor_distance && y < pge->ScreenHeight() - sensor_distance && y > sensor_distance))
-	if (trailmap->trails[(int)(x + (cos((rotation + sensor_angle) * (M_PI / 180)) * sensor_distance))][(int)(y + (sin((rotation + sensor_angle) * (M_PI / 180)) * sensor_distance))] > 100)
-		right = true;
-
-	else if (trailmap->trails[(int)(x + (cos((rotation - sensor_angle) * (M_PI / 180)) * sensor_distance))][(int)(y + (sin((rotation - sensor_angle) * (M_PI / 180)) * sensor_distance))] > 100)
-		left = true;
-
-	else
+	for (int i = x - sensor_size; i < x + sensor_size; i++)
 	{
-		left = false; 
-		right = false;
+		for (int j = y - sensor_size; j < y + sensor_size; j++)
+		{
+			if ((i < pge->ScreenWidth() - sensor_distance) && (i > sensor_distance && j < pge->ScreenHeight() - sensor_distance && j > sensor_distance))
+			{
+				if (trailmap->trails[(int)(i + (cos((rotation + sensor_angle) * (M_PI / 180)) * sensor_distance))][(int)(j + (sin((rotation + sensor_angle) * (M_PI / 180)) * sensor_distance))] > 100)
+					right = true;
+
+				else if (trailmap->trails[(int)(i - (cos((rotation + sensor_angle) * (M_PI / 180)) * sensor_distance))][(int)(j - (sin((rotation + sensor_angle) * (M_PI / 180)) * sensor_distance))] > 100)
+					left = true;
+
+				else
+				{
+					left = false; 
+					right = false;
+				}
+			}
+		}
 	}
 
 	// DECIDE STATE
@@ -43,21 +51,24 @@ void Particle::Sense(olc::PixelGameEngine* pge)
 
 void Particle::Rotate(olc::PixelGameEngine* pge)
 {
+	if (rotation > 360)
+		rotation -= 360;
+
 	// if state = 1; do nothing
 
 	if (state == 2)
 	{
-		rotation += rand() % 60 - 30;
+		rotation += rand() % 20 - 10;
 	}
 
 	else if (state == 3)
 	{
-		rotation += 25;
+		rotation += 10;
 	}
 
 	else if (state == 4)
 	{
-		rotation -= 25;
+		rotation -= 10;
 	}
 }
 
@@ -115,5 +126,15 @@ void Particle::Deposit(olc::PixelGameEngine* pge)
 
 void Particle::Draw(olc::PixelGameEngine* pge)
 {
-	//
+	for (int i = x - sensor_size; i < x + sensor_size; i++)
+	{
+		for (int j = y - sensor_size; j < y + sensor_size; j++)
+		{
+			if ((i < pge->ScreenWidth() - sensor_distance) && (i > sensor_distance && j < pge->ScreenHeight() - sensor_distance && j > sensor_distance))
+			{
+				pge->FillRect((int)(i + (cos((rotation - sensor_angle) * (M_PI / 180)) * sensor_distance)), (int)(j + (sin((rotation - sensor_angle) * (M_PI / 180)) * sensor_distance)), 1, 1, {255, 0, 255});
+				pge->FillRect((int)(i + (cos((rotation + sensor_angle) * (M_PI / 180)) * sensor_distance)), (int)(j + (sin((rotation + sensor_angle) * (M_PI / 180)) * sensor_distance)), 1, 1, {255, 0, 255});
+			}
+		}
+	}
 }

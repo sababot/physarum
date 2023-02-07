@@ -23,11 +23,11 @@ public:
 public:
 	// GLOBAL VARIABLES
 	int pixel_width = 1;
-	int mold_number = 500;
+	int mold_number = 10;
 	int speed = 10;
 	
 	TrailMap trailmap;
-	Particle molds[500];
+	Particle molds[10];
 
 	bool isPause = false;
 public:
@@ -36,16 +36,18 @@ public:
 		// SPAWN ALL PARTICLES
 		for (int i = 0; i < mold_number; i++)
 		{
-			molds[i].x = ScreenWidth() / 2;	
-			molds[i].y = ScreenHeight() / 2;	
+			molds[i].x = ScreenWidth() / 2;
+			molds[i].y = ScreenHeight() / 2;
 			molds[i].rotation = i * 3;
 
 			molds[i].speed = speed;
 			molds[i].state = 1;
 
 			molds[i].trailmap = &trailmap;
-			molds[i].sensor_distance = 15;
-			molds[i].sensor_angle = 10;
+
+			molds[i].sensor_distance = 10;
+			molds[i].sensor_angle = 45;
+			molds[i].sensor_size = 100;
 		}
 
 		return true;
@@ -89,7 +91,7 @@ public:
 int main()
 {
 	Physarum simulation;
-	if (simulation.Construct(1440, 1440, 1, 1))
+	if (simulation.Construct(1440, 1440, 2, 2))
 		simulation.Start();
 	return 0;
 }
