@@ -23,11 +23,11 @@ public:
 public:
 	// GLOBAL VARIABLES
 	int pixel_width = 1;
-	int mold_number = 10;
+	int mold_number = 120;
 	int speed = 10;
 	
 	TrailMap trailmap;
-	Particle molds[10];
+	Particle molds[120];
 
 	bool isPause = false;
 public:
@@ -47,7 +47,7 @@ public:
 
 			molds[i].sensor_distance = 10;
 			molds[i].sensor_angle = 45;
-			molds[i].sensor_size = 100;
+			molds[i].sensor_size = 4;
 		}
 
 		return true;
@@ -64,11 +64,11 @@ public:
 			// UPDATE PARTICLES
 			for (int i = 0; i < mold_number - 1; i++)
 			{	
-				molds[i].Sense(this);
+				//molds[i].Sense(this);
 				molds[i].Rotate(this);
 				molds[i].Move(this);
 				molds[i].Deposit(this);
-				molds[i].Draw(this);
+				//molds[i].Draw(this);
 			}
 
 			// UPDATE TRAILMAP

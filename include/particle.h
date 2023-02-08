@@ -13,6 +13,9 @@ class Particle
 public:
 	int x; // particle x position
 	int y; // particle y position
+	int target_x;
+	int target_y;
+	bool reach_target = false;
 	int rotation; // particle orientation/rotation
 	int speed; // particle speed
 

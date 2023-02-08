@@ -78,8 +78,8 @@ void Particle::Move(olc::PixelGameEngine* pge)
 	dx = sin(rotation * (M_PI / 180)) * speed;
 	dy = cos(rotation * (M_PI / 180)) * speed;
 
-	x += dx;
-	y += dy;
+	target_x = x + dx;
+	target_y = y + dy;
 
 	/***** BOUNDARIES *****/
 	if (x <= 1)
@@ -110,7 +110,20 @@ void Particle::Move(olc::PixelGameEngine* pge)
 
 void Particle::Deposit(olc::PixelGameEngine* pge)
 {
+	if (x != target_x)
+	{
+		x += (target_x - x) / (target_x - x);
+	}
+
+	else if (y != target_y)
+	{
+		y += (target_y - y) / (target_y - y);
+	}
+
+	if (x < pge->ScreenWidth() && x > 0 && y > 0 && y < pge->ScreenHeight())
+			trailmap->trails[x][y] = 255;
 	/***** IF MAX TRAILS NOT REACHED *****/
+	/*
 	for (int i = 0; i < abs(dx); i++)
 	{
 		if (x + ((dx / abs(dx)) * i) < pge->ScreenWidth() && x + ((dx / abs(dx)) * i) > 0 && y > 0 && y < pge->ScreenHeight())
@@ -122,6 +135,7 @@ void Particle::Deposit(olc::PixelGameEngine* pge)
 		if (x < pge->ScreenWidth() && x > 0 && y - ((dy / abs(dy)) * i) > 0 && y - ((dy / abs(dy)) * i) < pge->ScreenHeight())
 			trailmap->trails[x][y - ((dy / abs(dy)) * i)] = 255 - (i * 2);
 	}
+	*/
 }
 
 void Particle::Draw(olc::PixelGameEngine* pge)
